@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 const todos = ref<
   { content: string; category: string; done: boolean; createdAt: number }[]
@@ -7,6 +7,12 @@ const todos = ref<
 
 const input_content = ref("");
 const input_category = ref<string | null>(null);
+
+const todos_asc = computed(() =>
+  todos.value.sort((a, b) => {
+    return b.createdAt - a.createdAt;
+  }),
+);
 
 const addTodo = () => {
   if (input_content.value.trim() === "" || input_category.value === null)
@@ -55,6 +61,23 @@ const addTodo = () => {
         </div>
         <input type="submit" value="Add todo" />
       </form>
+    </section>
+    <section class="todo-list">
+      <div class="list">
+        <div
+          v-for="todo in todos_asc"
+          :class="`todo-item ${todo.done && 'done'}`"
+        >
+          <label>
+            <input type="checkbox" v-model="todo.done" />
+            <span :class="`bubble ${todo.category}`"></span>
+          </label>
+
+          <div class="todo-content">
+            <input type="text" v-model="todo.content" />
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 </template>
