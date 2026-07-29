@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 const todos = ref<
   { content: string; category: string; done: boolean; createdAt: number }[]
 >([]);
+const name = ref("");
 
 const input_content = ref("");
 const input_category = ref<string | null>(null);
@@ -28,10 +29,30 @@ const addTodo = () => {
 const removeTodo = (todo) => {
   todos.value = todos.value.filter((t) => t !== todo);
 };
+watch(
+  todos,
+  (newVal) => {
+    localStorage.setItem("todos", JSON.stringify(newVal));
+  },
+  { deep: true },
+);
+watch(name, (newVal) => {
+  localStorage.setItem("name", newVal);
+});
+
+onMounted(() => {
+  name.value = localStorage.getItem("name") || "";
+});
 </script>
 
 <template>
   <main>
+    <section>
+      <h2>
+        <input type="text" />
+      </h2>
+    </section>
+
     <section class="create-todo">
       <h3>Create a todo</h3>
       <form @submit.prevent="addTodo">
